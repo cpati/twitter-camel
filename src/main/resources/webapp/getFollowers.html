@@ -1,0 +1,62 @@
+<html>
+
+<head>
+<title>Welcome to twitter app by Backbenchers - Post Tweet</title>
+<script type='text/javascript'>
+
+    if (!window.WebSocket) {
+      alert("WebSocket not supported by this browser");
+    }
+    
+    function getFollowers() {
+    	 var ws = new WebSocket("ws://localhost:9090/getFollowers");
+			
+    	 ws.onopen = function()
+         {
+            // Web Socket is connected, send data using send()
+            ws.send("connection for getFollowers");
+            //console.log("search phrase sent");
+         };
+         
+    	ws.onmessage = function (evt) 
+        { 
+           var received_msg = evt.data;
+           document.getElementById("result").value=received_msg;
+           console.log("Message is received..."+received_msg);
+        };
+	
+
+    }
+
+   
+
+  </script>
+<style type='text/css'>
+div {
+	border: 0px solid black;
+}
+
+div#chat {
+	clear: both;
+	width: 80em;
+	height: 60ex;
+	overflow: auto;
+	background-color: #f0f0f0;
+	padding: 4px;
+	border: 1px solid black;
+}
+</style>
+</head>
+
+<body>
+	<div class="sub-heading">Get Followers</div>
+	<form>
+		<button type="button" onclick="getFollowers()">Get Followers</button>
+		<br/>
+		<br/>
+		<h4>List of Followers</h4>
+		<textarea rows="10" cols="50" id="result" readonly></textarea>
+	</form>
+</body>
+
+</html>

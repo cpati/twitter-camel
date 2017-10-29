@@ -1,0 +1,60 @@
+<html>
+
+<head>
+<title>Welcome to twitter app by Backbenchers - Post Tweet</title>
+<script type='text/javascript'>
+
+    if (!window.WebSocket) {
+      alert("WebSocket not supported by this browser");
+    }
+    
+    function search() {
+    	var phrase = document.getElementById("phrase").value;
+    	
+    	var ws = new WebSocket("ws://localhost:9090/post-tweet");
+			
+        ws.onopen = function()
+        {
+           // Web Socket is connected, send data using send()
+           ws.send(phrase);
+           
+           console.log("Tweet POsted");
+        };
+      
+        document.getElementById("phrase").value="";
+	
+
+    }
+
+   
+
+  </script>
+<style type='text/css'>
+div {
+	border: 0px solid black;
+}
+
+div#chat {
+	clear: both;
+	width: 80em;
+	height: 60ex;
+	overflow: auto;
+	background-color: #f0f0f0;
+	padding: 4px;
+	border: 1px solid black;
+}
+</style>
+</head>
+
+<body>
+	<div class="sub-heading">Post a Tweet</div>
+	<form>
+		<input type="text" id="phrase" />
+		<button type="button" onclick="search()">Post!</button>
+		<br />
+
+	</form>
+	<!-- <a href="index.html">Back to main menu</a> -->
+</body>
+
+</html>

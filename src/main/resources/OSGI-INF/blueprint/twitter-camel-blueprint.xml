@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+           http://www.osgi.org/xmlns/blueprint/v1.0.0 https://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+	<bean id="TwitterAPIServiceImpl" class="com.backBenchers.twitter.service.TwitterAPIServiceImpl" ></bean>
+	<bean id="twitterAPIBean" class="com.backBenchers.twitter.TwitterAPIBean">
+		<argument ref="TwitterAPIServiceImpl" />
+	</bean>
+	<bean id="twitterAPIGeoBean" class="com.backBenchers.twitter.TwitterAPIGeoBean">
+		<argument ref="TwitterAPIServiceImpl" />
+	</bean>
+	<bean id="TwitterAPIGetTrendsBean" class="com.backBenchers.twitter.TwitterAPIGetTrendsBean">
+		<argument ref="TwitterAPIServiceImpl" />
+	</bean>		
+	<bean id="TwitterAPIDirectMessageBean" class="com.backBenchers.twitter.TwitterAPIDirectMessageBean">
+		<argument ref="TwitterAPIServiceImpl" />
+	</bean>
+	<bean id="TwitterAPITimeLineBean" class="com.backBenchers.twitter.TwitterAPITimeLineBean">
+		<argument ref="TwitterAPIServiceImpl" />
+	</bean>	
+				
+	<bean id="twitterAPIPostTweetBean" class="com.backBenchers.twitter.TwitterAPIPostTweetBean">
+		<argument ref="TwitterAPIServiceImpl" />
+	</bean>
+
+	<bean id="twitterAPIGetFollowersBean" class="com.backBenchers.twitter.TwitterAPIGetFollowersBean">
+		<argument ref="TwitterAPIServiceImpl" />
+	</bean>
+	
+	<bean id="twitterAPIGetRetweetsBean" class="com.backBenchers.twitter.TwitterAPIGetRetweetsBean">
+		<argument ref="TwitterAPIServiceImpl" />
+	</bean>
+	
+
+	<!-- CamelContext with the twitter websocket example -->
+	<camelContext id="twitter-camel"
+		xmlns="http://camel.apache.org/schema/blueprint">
+
+		<!-- use properties files for twitter codes -->
+		<propertyPlaceholder id="placeholder"
+			location="classpath:twitter.properties" />
+
+
+
+		<route id="search-route-from">
+
+			<from uri="websocket://localhost:9090/search-tweet" />
+			<to uri="log:param" />
+			<to uri="bean:twitterAPIBean" />
+			<to uri="direct:search-route-to" />
+		</route>
+
+		<route id="search-route-to">
+
+			<from uri="direct:search-route-to" />
+
+			<to uri="log:tweet" />
+
+			<to
+				uri="websocket://localhost:9090/search-tweet?sendToAll=true&amp;staticResources=classpath:webapp" />
+
+		</route>
+
+		<route id="geo-route-from">
+
+			<from uri="websocket://localhost:9090/search-geo" />
+			<to uri="log:param" />
+			<to uri="bean:twitterAPIGeoBean" />
+			<to uri="direct:geo-route-to" />
+		</route>
+
+		<route id="geo-route-to">
+
+			<from uri="direct:geo-route-to" />
+
+			<to uri="log:tweet" />
+
+			<to
+				uri="websocket://localhost:9090/search-geo?sendToAll=true&amp;staticResources=classpath:webapp" />
+
+		</route>
+
+		<route id="post-tweet">
+
+			<from uri="websocket://localhost:9090/post-tweet" />
+			<to uri="log:param" />
+			<to uri="bean:twitterAPIPostTweetBean" />
+		</route>
+
+		<route id="get-trends-from">
+			<from uri="websocket://localhost:9090/get-trends" />
+			<to uri="log:param" />
+			<to uri="bean:TwitterAPIGetTrendsBean" />
+			<to uri="direct:get-trends-to" />
+		</route>
+		<route id="get-trends-to">
+			<from uri="direct:get-trends-to" />
+			<to uri="log:tweet" />
+			<to uri="websocket://localhost:9090/get-trends?sendToAll=true&amp;staticResources=classpath:webapp" />
+		</route>		
+
+		<route id="direct-message-from">
+			<from uri="websocket://localhost:9090/direct-message" />
+			<to uri="log:param" />
+			<to uri="bean:TwitterAPIDirectMessageBean" />
+			<to uri="direct:direct-message-to" />
+		</route>
+		<route id="direct-message-to">
+			<from uri="direct:direct-message-to" />
+			<to uri="log:tweet" />
+			<to uri="websocket://localhost:9090/direct-message?sendToAll=true&amp;staticResources=classpath:webapp" />
+		</route>	
+		
+		<route id="get-timeline-from">
+			<from uri="websocket://localhost:9090/timeline" />
+			<to uri="log:param" />
+			<to uri="bean:TwitterAPITimeLineBean" />
+			<to uri="direct:get-timeline-to" />
+		</route>
+		<route id="get-timeline-to">
+			<from uri="direct:get-timeline-to" />
+			<to uri="log:tweet" />
+			<to uri="websocket://localhost:9090/timeline?sendToAll=true&amp;staticResources=classpath:webapp" />
+		</route>		
+		
+		<route id="get-followers-from">
+			<from uri="websocket://localhost:9090/getFollowers" />
+			<to uri="log:param" />
+			<to uri="bean:twitterAPIGetFollowersBean" />
+			<to uri="direct:get-followers-to" />
+		</route>
+		<route id="get-followers-to">
+			<from uri="direct:get-followers-to" />
+			<to uri="log:followers" />
+			<to uri="websocket://localhost:9090/getFollowers?sendToAll=true&amp;staticResources=classpath:webapp" />
+		</route>		
+		
+		<route id="get-retweets-from">
+			<from uri="websocket://localhost:9090/getRetweetsOfMe" />
+			<to uri="log:param" />
+			<to uri="bean:twitterAPIGetRetweetsBean" />
+			<to uri="direct:get-retweets-to" />
+		</route>
+		<route id="get-retweets-to">
+			<from uri="direct:get-retweets-to" />
+			<to uri="log:retweets" />
+			<to uri="websocket://localhost:9090/getRetweetsOfMe?sendToAll=true&amp;staticResources=classpath:webapp" />
+		</route>		
+		
+	</camelContext>
+
+</blueprint>

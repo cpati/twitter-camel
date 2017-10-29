@@ -1,0 +1,62 @@
+<html>
+
+<head>
+<title>Welcome to twitter app by Backbenchers - Get Retweets</title>
+<script type='text/javascript'>
+
+    if (!window.WebSocket) {
+      alert("WebSocket not supported by this browser");
+    }
+    
+    function getRetweetsOfMe() {
+    	 var ws = new WebSocket("ws://localhost:9090/getRetweetsOfMe");
+			
+    	 ws.onopen = function()
+         {
+            // Web Socket is connected, send data using send()
+            ws.send("connection for getRetweetsOfMe");
+            //console.log("search phrase sent");
+         };
+         
+    	ws.onmessage = function (evt) 
+        { 
+           var received_msg = evt.data;
+           document.getElementById("result").value=received_msg;
+           console.log("Message is received..."+received_msg);
+        };
+	
+
+    }
+
+   
+
+  </script>
+<style type='text/css'>
+div {
+	border: 0px solid black;
+}
+
+div#chat {
+	clear: both;
+	width: 80em;
+	height: 60ex;
+	overflow: auto;
+	background-color: #f0f0f0;
+	padding: 4px;
+	border: 1px solid black;
+}
+</style>
+</head>
+
+<body>
+	<div class="sub-heading">Get Retweets of Me</div>
+	<form>
+<!--		<button type="button" onclick="getRetweetsOfMe()">Get RetweetsOfMe</button>
+		<br/>
+		<br/>    -->
+		<h4>20 most recent tweets, which have been retweeted by others.</h4>
+		<textarea rows="10" cols="50" id="result" readonly></textarea>
+	</form>
+</body>
+
+</html>

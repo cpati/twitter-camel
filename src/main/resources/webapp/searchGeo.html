@@ -1,0 +1,86 @@
+<html>
+
+<head>
+  <title>Welcome to twitter app by Backbenchers - Search Geo Location</title>
+  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+  
+  <script type='text/javascript'>
+
+    if (!window.WebSocket) {
+      alert("WebSocket not supported by this browser");
+    }
+    
+    function search() {
+    	var city = document.getElementById("city").value;
+    	var con = document.getElementById("con").value;
+    	var address = city +", " + con;
+    	var geocode;
+    	
+    	var geocoder =  new google.maps.Geocoder();
+        geocoder.geocode( { 'address': address}, function(results, status) {
+              if (status == google.maps.GeocoderStatus.OK) {
+                alert("location : " + results[0].geometry.location.lat() + " " +results[0].geometry.location.lng());
+                geocode = results[0].geometry.location.lat() + ":" + results[0].geometry.location.lng();
+                
+                var ws = new WebSocket("ws://localhost:9090/search-geo");
+    			
+                ws.onopen = function()
+                {
+                   // Web Socket is connected, send data using send()
+                   ws.send(geocode);
+                   console.log("search phrase sent");
+                };
+                
+                ws.onmessage = function (evt) 
+                { 
+                   var received_msg = evt.data;
+                   document.getElementById("result").value=received_msg;
+                   console.log("Message is received..."+received_msg);
+                };
+                
+              } else {
+                alert("Something got wrong " + status);
+              }
+        });
+
+    }
+
+   
+
+  </script>
+  <style type='text/css'>
+    div {
+      border: 0px solid black;
+    }
+
+    div#chat {
+      clear: both;
+      width: 80em;
+      height: 60ex;
+      overflow: auto;
+      background-color: #f0f0f0;
+      padding: 4px;
+      border: 1px solid black;
+    }
+  </style>
+</head>
+
+<body>
+<br/>
+<br/>
+<p/>
+<form>
+	City : <input type="text" id="city"/>
+	Country : <input type="text" id="con"/>
+	<button type="button" onclick="search()">Search!</button>
+	<br/>
+	<h4>Search Result</h4>
+	<textarea rows="10" cols="50" id="result" readonly></textarea>
+		
+	</textarea>
+	
+</form>
+<!-- <a href="index.html">Back to main menu</a> -->
+</body>
+
+</html>
